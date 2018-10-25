@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Ground 1 FX
+  m_Shader: {fileID: 23, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _BumpMap:
+        m_Texture: {fileID: 2800000, guid: f6ea067ee2356cd49baf188f90164846, type: 3}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _Cube:
+        m_Texture: {fileID: 8900000, guid: 5eb96b8543bb4784e97c06b21053e6eb, type: 2}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: bbe161d3373d48d4a95d764e6eef7a09, type: 3}
+        m_Scale: {x: 4, y: 4}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Shininess: 0.61043847
+    m_Colors:
+    - _Color: {r: 0.49253732, g: 0.4778347, b: 0.4778347, a: 1}
+    - _ReflectColor: {r: 0.7835821, g: 0.7835821, b: 0.7835821, a: 0.64705884}
+    - _SpecColor: {r: 0.3432836, g: 0.33303633, b: 0.33303633, a: 1}
