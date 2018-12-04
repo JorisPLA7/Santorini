@@ -8,6 +8,15 @@ using UnityEngine;
 
 public class GameUI : MonoBehaviour {
 
+    public L1_BuildingController l1_build;
+    public L2_BuildingController l2_build;
+    public L3_BuildingController l3_build;
+    public L4_BuildingController l4_build;
+
+    public ParticleSystem HermesDust;
+    public ParticleSystem HepFlame;
+    public AudioSource HermesSpeed;
+    
     /***********************************************************************************
     * Script Name: SelectWorker
     * Description: Show worker selection.
@@ -29,41 +38,66 @@ public class GameUI : MonoBehaviour {
 
     /***********************************************************************************
     * Script Name: PlaceWorker
-    * Description: Move a worker to a space
+    * Description: Move a worker to a space (Animation related)
     **********************************************************************************/
     public void PlaceWorker(PlayerWorker worker, Space selectedSpace)
     {
-        //TODO: Assert error if worker or space is null
-        //Vector3 workerPosition = new Vector3(0.0f, 0.0f, 0.0f);
-        //workerPosition.x = selectedSpace.transform.position.x;
-        //workerPosition.z = selectedSpace.transform.position.z;
+        worker.transform.position = new Vector3(selectedSpace.spacePosition.x, selectedSpace.GetHeight(), selectedSpace.spacePosition.z);
+
+        if (worker.owner.currentGodCard.name == "Hermes" && GameManager.instance.currentPlayer == worker.owner && GameManager.instance.currentMode != GameManager.Mode.SettingUp)
+            {
+            HermesSpeed.Play();
+            PlayEffectOnce(HermesDust, worker.transform.position);
+            }
+    }
+
+
+    /***********************************************************************************
+    * Script Name: BuildBlock
+    * Description: Visually build a block on a space at its current floor level
+    **********************************************************************************/
+    public void BuildBlock(Space selectedSpace)
+    {
+
+        //Destroy building on the space
+        Destroy(selectedSpace.building);
 
         // Transform to account for space currentFloorLevel
         if (selectedSpace.GetSpaceFloorLevel() == FloorLevel.ground)
         {
-            worker.transform.position = new Vector3(selectedSpace.spacePosition.x, (float)0.0, selectedSpace.spacePosition.z);
-
+            //Spawn L1_building
+            l1_build.Spawn_L1(selectedSpace);
         }
         else if (selectedSpace.GetSpaceFloorLevel() == FloorLevel.first)
         {
-            worker.transform.position = new Vector3(selectedSpace.spacePosition.x,
-                                                    L1_BuildingController.L1_Building_Height, selectedSpace.spacePosition.z);
+            //Spawn L2_building
+            l2_build.Spawn_L2(selectedSpace);
         }
         else if (selectedSpace.GetSpaceFloorLevel() == FloorLevel.second)
         {
-            worker.transform.position = new Vector3(selectedSpace.spacePosition.x,
-                                                    L2_BuildingController.L2_Building_Height, selectedSpace.spacePosition.z);
+            //Spawn L3_building
+            l3_build.Spawn_L3(selectedSpace);
         }
         else if (selectedSpace.GetSpaceFloorLevel() == FloorLevel.third)
         {
-            worker.transform.position = new Vector3(selectedSpace.spacePosition.x,
-                                                    L3_BuildingController.L3_Building_Height, selectedSpace.spacePosition.z);
-        } else {
-                // Notify player via UI that the move is invalid, as the space is blocked by tower. 
+            //Spawn L4_building
+            l4_build.Spawn_L4(selectedSpace);
         }
 
+        if (GameManager.instance.currentPlayer.currentGodCard.name == "Hephaestus")
+        {
+            Debug.Log("activating hep flame");
+            PlayEffectOnce(HepFlame, selectedSpace.spacePosition);
+        }
     }
 
+    protected void PlayEffectOnce(ParticleSystem prefab, Vector3 position) {
+        if (prefab == null) { return ; }
+
+        ParticleSystem ps = Instantiate(prefab, position, Quaternion.identity) as ParticleSystem;
+        GetComponent<particleDestroyer>().particleOn =ps;
+        GetComponent<particleDestroyer>().destroyParticle();
+    }
 
     /***********************************************************************************
     * Function Name: Start

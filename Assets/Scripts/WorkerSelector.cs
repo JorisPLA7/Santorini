@@ -11,6 +11,9 @@ public class WorkerSelector : MonoBehaviour {
 
     public Camera GameCamera;
 
+    private PlayerWorker selectedWorker;
+
+
 
     /***********************************************************************************
     * Function Name: Start
@@ -18,6 +21,7 @@ public class WorkerSelector : MonoBehaviour {
     **********************************************************************************/
     void Start () {
         enabled = false;
+        selectedWorker = null;
 	}
 
 
@@ -34,23 +38,19 @@ public class WorkerSelector : MonoBehaviour {
         //TODO: Add functionality for player 2
         if (Physics.Raycast(ray, out hitInfo, 25.0f, LayerMask.GetMask("Worker")))
         {
-            //REMOVE LATER: If mouse hovers over a worker, note it in the console
-            Debug.Log("Mouse over worker " + hitInfo.collider.gameObject.name);
-
             //If worker is clicked, "select" it and indicate it with a material change.
             if (Input.GetMouseButtonDown(0))
             {
-                //REMOVE LATER: Verify correct object is being clicked.
-                Debug.Log("Worker " + hitInfo.collider.gameObject.name + "clicked!");
-
-                PlayerWorker selectedWorker = hitInfo.collider.gameObject.GetComponent<PlayerWorker>();
+                //TODO: ADD A CONDITIONAL FOR PROMETHEUS -  workers can choose to build, move(but cannot move up), then build again
+                PlayerWorker tempWorker = hitInfo.collider.gameObject.GetComponent<PlayerWorker>();
+                //UpdateCamera(selectedWorker);
 
                 //Check if worker belongs to player
-                if (GameManager.instance.WorkerCurrentPlayer(selectedWorker))
+                if (GameManager.instance.WorkerCurrentPlayer(tempWorker))
                 {
+                    selectedWorker = tempWorker;
                     GameManager.instance.SelectWorker(selectedWorker);
-                    ExitState(selectedWorker);
-
+                    selectedWorker.owner.currentGodCard.ExitState();
                 }
             }
         }
@@ -63,6 +63,9 @@ public class WorkerSelector : MonoBehaviour {
     **********************************************************************************/
     public void EnterState()
     {
+        //added by Brian for ActionPhase UI
+        GameManager.instance.currentPhase = GameManager.ActionPhase.Select;
+
         enabled = true;
     }
 
@@ -70,12 +73,62 @@ public class WorkerSelector : MonoBehaviour {
   * Function Name: ExitState
   * Description: Called when worker selection exited -> tile selector state for movement/building
   **********************************************************************************/
-    private void ExitState(PlayerWorker worker)
+    public void ExitState()
     {
         enabled = false;
-        TileSelector tileSelect = GetComponent<TileSelector>();
-        tileSelect.EnterState(worker);
+        selectedWorker.owner.currentGodCard.EnterMoveState(selectedWorker);
+        
     }
 
+    //BRIAN'S FUNCTION FOR PROMETHEUS
+    /***********************************************************************************
+  * Function Name: ExitState
+  * Description: ExitState for Prometheus, he can choose to 
+  **********************************************************************************/
+  /*
+    private void ExitStatePrometheus(PlayerWorker worker)
+        {
+            enabled = false;
+            TileSelector tileSelect = GetComponent<TileSelector>();
+            tileSelect.EnterBuildState(worker);
+
+        }
+ */
+
+    /***********************************************************************************
+* Function Name: GetSelectedWorker
+* Description: Gets the currently selected worker
+**********************************************************************************/
+    public PlayerWorker GetSelectedWorker()
+    {
+        return selectedWorker;
+    }
+
+    /***********************************************************************************
+    * Function Name: ExitState
+    * Description: Contextually shifts the view to that of select worker.
+    *   (added by Chris)
+    **********************************************************************************/
+    // public void UpdateCamera(PlayerWorker CurrWorker) 
+    /*{
+        GameObject CameraSelector = GameObject.Find("CameraController");
+        Debug.Log("Selected Worker Name: " + CurrWorker.name);
+
+        // Contextually swith the camera to the 1st person view of the 
+        // selected player 
+        if (CurrWorker.name == "Player1-Worker Male") {
+            // Player 1 Male view
+            CameraSelector.GetComponent<CameraController>().ShowP1MaleCamera();
+        } else if (CurrWorker.name == "Player1-Worker Female") {
+            // Player 1 Female view
+            CameraSelector.GetComponent<CameraController>().ShowP1FemaleCamera();
+        } else if (CurrWorker.name == "Player2-Worker Male") {
+            // Player 2 Male view
+            CameraSelector.GetComponent<CameraController>().ShowP2MaleCamera();
+        } else {
+            // Player 2 Female view
+            CameraSelector.GetComponent<CameraController>().ShowP1FemaleCamera();
+        }
+    }*/
 
 }
